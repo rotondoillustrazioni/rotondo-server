@@ -34,7 +34,8 @@
     "url": "https://github.com/vitlinda/rotondo-server/issues"
   },
   "engines": {
-    "node": "12.19.0"
+    "node": "12.19.0",
+    "npm": "6.14.8"
   },
   "homepage": "https://github.com/vitlinda/rotondo-server#readme",
   "description": ""
