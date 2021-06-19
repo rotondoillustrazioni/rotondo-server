@@ -1,7 +1,10 @@
 {
-    "name": "rotondo-website",
+    "name": "rotondo-server",
     "version": "0.1.0",
     "private": true,
+    "scripts": {
+        "start": "node server.js"
+      },
     "browserslist": {
       "production": [
         ">0.2%",
