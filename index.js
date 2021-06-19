@@ -1,7 +1,8 @@
 const { ObjectId } = require("bson");
-var express = require("express");
-var app = express();
+const express = require("express");
+const app = express();
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const uri =
   process.env.MONGODB_URI;
@@ -16,6 +17,11 @@ const connectDB = async () => {
 
 connectDB();
 
+app.use(
+  cors({
+    origin: process.env.ORIGINS,
+  })
+);
 app.use(express.json({ extended: false }));
 
 const projectSchema = mongoose.Schema(
