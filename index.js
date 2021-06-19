@@ -2,7 +2,6 @@ const { ObjectId } = require("bson");
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const cors = require("cors");
 
 const uri =
   process.env.MONGODB_URI;
@@ -17,12 +16,15 @@ const connectDB = async () => {
 
 connectDB();
 
-app.use(
-  cors({
-    origin: process.env.ORIGINS,
-  })
-);
-app.use(express.json({ extended: false }));
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+// app.use(express.json({ extended: false }));
 
 const projectSchema = mongoose.Schema(
   { _id: ObjectId, title: String, description: String, images: Array },
