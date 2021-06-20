@@ -43,14 +43,14 @@ app.get("/projects", async (req, res) => {
   });
 });
 
-// app.get("/users/:id", function (req, res) {
-//   User.findById(req.params.id, function (err, doc) {
-//     if (err) {
-//       res.send(err);
-//     }
-//     res.json(doc);
-//   });
-// });
+app.get("/project/:id", (req, res) => {
+  User.findById(req.params.id, (err, doc) => {
+    if (err) {
+      res.send(err);
+    }
+    res.json(doc);
+  });
+});
 
 app.listen(process.env.PORT || 3000, () => {
   console.log("Server is listening");
