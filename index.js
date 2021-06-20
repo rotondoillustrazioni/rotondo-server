@@ -24,7 +24,6 @@ app.use(function (req, res, next) {
   );
   next();
 });
-// app.use(express.json({ extended: false }));
 
 const projectSchema = mongoose.Schema(
   { _id: ObjectId, title: String, description: String, images: Array },
