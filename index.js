@@ -44,7 +44,7 @@ app.get("/projects", async (req, res) => {
 });
 
 app.get("/project/:id", (req, res) => {
-  User.findById(req.params.id, (err, doc) => {
+  Project.findById(req.params.id, (err, doc) => {
     if (err) {
       res.send(err);
     }
