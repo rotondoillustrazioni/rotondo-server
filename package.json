@@ -20,11 +20,11 @@
   "dependencies": {
     "bson": "^4.4.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
     "express": "^4.17.1",
     "mongoose": "^5.12.14"
   },
   "main": "server.js",
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vitlinda/rotondo-server.git"

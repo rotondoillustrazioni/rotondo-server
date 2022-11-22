@@ -2,9 +2,9 @@ const { ObjectId } = require("bson");
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+require('dotenv').config();
 
-const uri =
-  process.env.MONGODB_URI;
+const uri = process.env.MONGODB_URI;
 
 const connectDB = async () => {
   await mongoose.connect(uri, {
