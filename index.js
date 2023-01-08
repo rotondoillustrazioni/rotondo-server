@@ -7,11 +7,19 @@ require("dotenv").config();
 const uri = process.env.MONGODB_URI;
 
 const connectDB = async () => {
-  await mongoose.connect(uri, {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-  });
-  console.log("DB connected");
+  await mongoose
+    .connect(uri, {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+    })
+    .then(
+      () => {
+        console.log("DB connected");
+      },
+      (err) => {
+        console.log("DB connection error " + err);
+      }
+    );
 };
 
 connectDB();
@@ -30,7 +38,7 @@ const projectSchema = mongoose.Schema(
   { collection: "project" }
 );
 
-const Project = mongoose.model("project", projectSchema);
+const Project = mongoose.model("rotondodb", projectSchema);
 
 app.get("/projects", async (req, res) => {
   Project.find({}, (err, doc) => {
