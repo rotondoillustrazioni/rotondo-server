@@ -2,7 +2,7 @@ const { ObjectId } = require("bson");
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-require('dotenv').config();
+require("dotenv").config();
 
 const uri = process.env.MONGODB_URI;
 
@@ -52,5 +52,5 @@ app.get("/project/:id", (req, res) => {
 });
 
 app.listen(process.env.PORT || 3000, () => {
-  console.log("Server is listening");
+  console.log("Server is listening...");
 });
