@@ -38,7 +38,7 @@ const projectSchema = mongoose.Schema(
   { collection: "project" }
 );
 
-const Project = mongoose.model("rotondodb", projectSchema);
+const Project = mongoose.model("rotondo-mongodb", projectSchema);
 
 app.get("/projects", async (req, res) => {
   Project.find({}, (err, doc) => {
