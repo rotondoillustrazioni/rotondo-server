@@ -58,7 +58,7 @@ app.get("/projects", (req, res) => {
 });
 
 app.get("/project/:id", (req, res) => {
-  projectSchema.findById(req.params.id, (err, doc) => {
+  projectsSchema.findById(req.params.id, (err, doc) => {
     if (err) {
       res.send(err);
     }
