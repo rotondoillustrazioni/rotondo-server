@@ -6,11 +6,12 @@ require("dotenv").config();
 
 const uri = process.env.MONGODB_URI;
 
-const connectDB = async () => {
+const connectToDB = async () => {
   await mongoose
     .connect(uri, {
       useUnifiedTopology: true,
       useNewUrlParser: true,
+      dbName: "rotondo",
     })
     .then(
       () => {
@@ -22,9 +23,9 @@ const connectDB = async () => {
     );
 };
 
-connectDB();
+connectToDB();
 
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -33,25 +34,31 @@ app.use(function (req, res, next) {
   next();
 });
 
-const projectSchema = mongoose.Schema(
-  { _id: ObjectId, title: String, description: String, images: Array },
-  { collection: "project" }
+const Projects = mongoose.Schema(
+  {
+    _id: ObjectId,
+    title: String,
+    subtitle: String,
+    description: String,
+    images: Array,
+  },
+  { collection: "projects" }
 );
 
-const Project = mongoose.model("rotondo-mongodb", projectSchema);
+const projectsSchema = mongoose.model("projects", Projects);
 
-app.get("/projects", async (req, res) => {
-  Project.find({}, (err, doc) => {
+app.get("/projects", (req, res) => {
+  projectsSchema.find((err, doc) => {
     if (err) {
-      res.send(err);
       console.log("error");
+      res.send(err);
     }
     res.json(doc);
   });
 });
 
 app.get("/project/:id", (req, res) => {
-  Project.findById(req.params.id, (err, doc) => {
+  projectSchema.findById(req.params.id, (err, doc) => {
     if (err) {
       res.send(err);
     }
