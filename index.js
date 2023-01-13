@@ -3,6 +3,9 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 require("dotenv").config();
+const bcryptjs = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const bodyParser = require("body-parser");
 
 const uri = process.env.MONGODB_URI;
 
@@ -33,6 +36,20 @@ app.use((req, res, next) => {
   );
   next();
 });
+
+app.use(bodyParser.json());
+
+const Users = mongoose.Schema(
+  {
+    _id: ObjectId,
+    username: String,
+    password: String,
+    email: String,
+  },
+  { collection: "users" }
+);
+
+const usersSchema = mongoose.model("users", Users);
 
 const Projects = mongoose.Schema(
   {
@@ -66,6 +83,34 @@ app.get("/project/:id", (req, res) => {
   });
 });
 
-app.listen(process.env.PORT || 3000, () => {
+async function getUser(username) {
+  return usersSchema.findOne({
+    username: username,
+  });
+}
+
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await getUser(username);
+    if (user) {
+      if (bcryptjs.compareSync(password, user.password)) {
+        res.status(200).send({
+          token: jwt.sign({ email: user.email }, process.env.TOKEN_SECRET, {
+            expiresIn: process.env.TOKEN_TTL,
+          }),
+        });
+      } else {
+        res.status(401).send({ error: "Username or password does not match." });
+      }
+    } else {
+      res.status(401).send({ error: "Username or password does not match." });
+    }
+  } catch (error) {
+    res.status(401).send({ error: "Username or password does not match." });
+  }
+});
+
+app.listen(process.env.PORT, () => {
   console.log("Server is listening...");
 });
