@@ -10,23 +10,12 @@ const bodyParser = require("body-parser");
 const uri = process.env.MONGODB_URI;
 
 const connectToDB = async () => {
-  await mongoose
-    .connect(uri, {
-      useUnifiedTopology: true,
-      useNewUrlParser: true,
-      dbName: "rotondo",
-    })
-    .then(
-      () => {
-        console.log("DB connected");
-      },
-      (err) => {
-        console.log("DB connection error " + err);
-      }
-    );
+  await mongoose.connect(uri, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+    dbName: "rotondo",
+  });
 };
-
-connectToDB();
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -83,6 +72,18 @@ app.get("/project/:id", (req, res) => {
   });
 });
 
+app.get("/aboutUs/:lan", (req, res) => {
+  const fs = require("fs");
+  let rawdata = fs.readFileSync("aboutUs.json");
+  var aboutUs;
+  if (req.params.lan === "en") {
+    aboutUs = JSON.parse(rawdata).aboutUsEN;
+  } else {
+    aboutUs = JSON.parse(rawdata).aboutUsIT;
+  }
+  res.json({ description: aboutUs });
+});
+
 async function getUser(username) {
   return usersSchema.findOne({
     username: username,
@@ -111,6 +112,14 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.listen(process.env.PORT, () => {
-  console.log("Server is listening...");
-});
+connectToDB().then(
+  () => {
+    console.log("DB connected");
+    app.listen(process.env.PORT, () => {
+      console.log("Server is listening...");
+    });
+  },
+  (err) => {
+    console.log("DB connection error " + err);
+  }
+);
