@@ -72,16 +72,32 @@ app.get("/project/:id", (req, res) => {
   });
 });
 
-app.get("/aboutUs/:lan", (req, res) => {
+app.get("/aboutus/:lan", (req, res) => {
   const fs = require("fs");
-  let rawdata = fs.readFileSync("aboutUs.json");
   var aboutUs;
   if (req.params.lan === "en") {
-    aboutUs = JSON.parse(rawdata).aboutUsEN;
-  } else {
-    aboutUs = JSON.parse(rawdata).aboutUsIT;
+    let rawdata = fs.readFileSync("localization/aboutUsEN.json");
+    aboutUs = JSON.parse(rawdata).aboutUs;
+  } else if (req.params.lan === "it") {
+    let rawdata = fs.readFileSync("localization/aboutUsIT.json");
+    aboutUs = JSON.parse(rawdata).aboutUs;
   }
   res.json({ description: aboutUs });
+});
+
+app.post("/aboutus/edit/:lan", async (req, res) => {
+  const fs = require("fs");
+  if (req.params.lan === "en") {
+    fs.writeFileSync(
+      "localization/aboutUsEN.json",
+      JSON.stringify({ aboutUs: req.body.description })
+    );
+  } else if (req.params.lan === "it") {
+    fs.writeFileSync(
+      "localization/aboutUsIT.json",
+      JSON.stringify({ aboutUs: req.body.description })
+    );
+  }
 });
 
 async function getUser(username) {
@@ -116,7 +132,7 @@ connectToDB().then(
   () => {
     console.log("DB connected");
     app.listen(process.env.PORT, () => {
-      console.log("Server is listening...");
+      console.log("Server is listening on port " + process.env.PORT + "...");
     });
   },
   (err) => {
