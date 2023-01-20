@@ -93,6 +93,19 @@ app.get("/project/:id", (req, res) => {
   });
 });
 
+app.delete("/project/delete/:id", (req, res) => {
+  projectsSchema.findByIdAndDelete(req.params.id, (err, doc) => {
+    if (err) {
+      res.send(err);
+    }
+    res.json(doc);
+  });
+});
+
+app.put("/project/new", (req, res) => {
+  console.log(req.body.content);
+});
+
 app.get("/aboutus/:lan", (req, res) => {
   const fs = require("fs");
   var aboutUs;
