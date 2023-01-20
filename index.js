@@ -5,7 +5,9 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { expressjwt: expressJwt } = require("express-jwt");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const uri = process.env.MONGODB_URI;
 
@@ -26,7 +28,26 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(
+  expressJwt({
+    secret: process.env.TOKEN_SECRET,
+    algorithms: ["HS256"],
+  }).unless({
+    method: ["GET"],
+    path: ["/login"],
+  })
+);
+
+app.use((err, req, res, next) => {
+  if (err.name === "UnauthorizedError") {
+    res.status(401).send({ error: "No valid authorization token found." });
+  } else {
+    res.status(500).send({ error: err.message });
+  }
+});
+
 app.use(bodyParser.json());
+app.use(cors());
 
 const Users = mongoose.Schema(
   {
@@ -93,7 +114,7 @@ app.get("/contacts/", (req, res) => {
   res.json(contacts);
 });
 
-app.post("/contacts/:contact", async (req, res) => {
+app.post("/contacts/edit/:contact", async (req, res) => {
   let body = req.body.content;
   const fs = require("fs");
   let content = JSON.parse(
