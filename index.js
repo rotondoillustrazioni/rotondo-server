@@ -8,6 +8,8 @@ const jwt = require("jsonwebtoken");
 const { expressjwt: expressJwt } = require("express-jwt");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const multiparty = require("multiparty");
+const AWS = require("aws-sdk");
 
 const uri = process.env.MONGODB_URI;
 
@@ -103,7 +105,17 @@ app.delete("/project/delete/:id", (req, res) => {
 });
 
 app.put("/project/new", (req, res) => {
-  console.log(req.body.content);
+  var form = new multiparty.Form();
+  form.parse(req, function (err, fields, files) {
+    if (err) {
+      res.send(err);
+    } else {
+      console.log("QUI ", uploadProjectOnS3(fields.title[0], files.images));
+
+      // upload on db
+      res.status(200).send({ message: "New Project added" });
+    }
+  });
 });
 
 app.get("/aboutus/:lan", (req, res) => {
@@ -199,3 +211,33 @@ connectToDB().then(
     console.log("DB connection error " + err);
   }
 );
+
+const uploadProjectOnS3 = (folderName, images) => {
+  AWS.config.update({
+    region: process.env.REGION,
+    accessKeyId: process.env.ACCESS_KEY_ID,
+    secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  });
+  let s3 = new AWS.S3();
+  var urls = images.map(async (image) => {
+    let url = await uploadImageOnS3(s3, folderName, image);
+    return url;
+  });
+  console.log("URLS ", urls);
+  return urls;
+};
+
+const uploadImageOnS3 = async (s3, folderName, image) => {
+  const fs = require("fs");
+  const key = folderName + "/" + image.originalFilename;
+  let params = {
+    Bucket: process.env.BUCKET_NAME,
+    Key: key,
+    Body: fs.readFileSync(image.path),
+    ContentEncoding: "base64",
+    ContentType: "image/png",
+    ACL: "public-read",
+  };
+  let data = await s3.upload(params).promise();
+  return data.Location;
+};
