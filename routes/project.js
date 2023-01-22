@@ -1,5 +1,6 @@
 const multiparty = require("multiparty");
 const uploadProjectOnS3 = require("../api/aws").uploadProjectOnS3;
+const emptyS3Directory = require("../api/aws").emptyS3Directory;
 const { projectsSchema, newProjectSchema } = require("../schemas");
 
 const getProject = (req, res) => {
@@ -12,13 +13,14 @@ const getProject = (req, res) => {
 };
 
 const deleteProject = (req, res) => {
-  projectsSchema.findByIdAndDelete(req.params.id, (err, doc) => {
+  projectsSchema.findByIdAndDelete(req.params.id, async (err, doc) => {
     if (err) {
       res.send(err);
     }
+    // delete the AWS S3 project
+    await emptyS3Directory(process.env.BUCKET_NAME, req.body.projectTitle);
     res.json(doc);
   });
-  // delete the AWS S3 project
 };
 
 const newProject = async (req, res) => {

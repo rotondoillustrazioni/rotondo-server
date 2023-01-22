@@ -1,12 +1,13 @@
 const AWS = require("aws-sdk");
 
+AWS.config.update({
+  region: process.env.REGION,
+  accessKeyId: process.env.ACCESS_KEY_ID,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
+});
+let s3 = new AWS.S3();
+
 async function uploadProjectOnS3(folderName, images) {
-  AWS.config.update({
-    region: process.env.REGION,
-    accessKeyId: process.env.ACCESS_KEY_ID,
-    secretAccessKey: process.env.SECRET_ACCESS_KEY,
-  });
-  let s3 = new AWS.S3();
   let res = [];
   await Promise.all(
     images.map(async (image) => {
@@ -32,4 +33,31 @@ async function uploadImageOnS3(s3, folderName, image) {
   return data.Location;
 }
 
-module.exports = { uploadProjectOnS3: uploadProjectOnS3 };
+async function emptyS3Directory(bucket, dir) {
+  const listParams = {
+    Bucket: bucket,
+    Prefix: dir,
+  };
+
+  const listedObjects = await s3.listObjectsV2(listParams).promise();
+
+  if (listedObjects.Contents.length === 0) return;
+
+  const deleteParams = {
+    Bucket: bucket,
+    Delete: { Objects: [] },
+  };
+
+  listedObjects.Contents.forEach(({ Key }) => {
+    deleteParams.Delete.Objects.push({ Key });
+  });
+
+  await s3.deleteObjects(deleteParams).promise();
+
+  if (listedObjects.IsTruncated) await emptyS3Directory(bucket, dir);
+}
+
+module.exports = {
+  uploadProjectOnS3: uploadProjectOnS3,
+  emptyS3Directory: emptyS3Directory,
+};
