@@ -14,6 +14,18 @@ const Projects = mongoose.Schema(
 
 const projectsSchema = mongoose.model("projects", Projects);
 
+const NewProject = mongoose.Schema(
+  {
+    title: String,
+    subtitle: String,
+    description: String,
+    images: Array,
+  },
+  { collection: "projects" }
+);
+
+const newProjectSchema = mongoose.model("newProject", NewProject);
+
 const Users = mongoose.Schema(
   {
     _id: ObjectId,
@@ -25,4 +37,4 @@ const Users = mongoose.Schema(
 );
 const usersSchema = mongoose.model("users", Users);
 
-module.exports = { projectsSchema, usersSchema };
+module.exports = { projectsSchema, usersSchema, newProjectSchema };

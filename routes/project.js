@@ -1,6 +1,6 @@
 const multiparty = require("multiparty");
 const uploadProjectOnS3 = require("../api/aws").uploadProjectOnS3;
-const { projectsSchema } = require("../schemas");
+const { projectsSchema, newProjectSchema } = require("../schemas");
 
 const getProject = (req, res) => {
   projectsSchema.findById(req.params.id, (err, doc) => {
@@ -27,11 +27,25 @@ const newProject = async (req, res) => {
     if (err) {
       res.send(err);
     } else {
-      let urls = await uploadProjectOnS3(fields.title[0], files.images);
-      console.log(urls);
+      await uploadProjectOnS3(fields.title[0], files.images).then(
+        async (urls) => {
+          const newProject = new newProjectSchema({
+            title: fields.title[0],
+            subtitle: fields.subtitle[0],
+            description: fields.description[0],
+            images: urls,
+          });
 
-      // upload on db
-      res.status(200).send({ message: "New Project added" });
+          await newProject.save((err) => {
+            if (err) {
+              console.log(err);
+              res.status(500).send({ message: "Error" });
+            } else {
+              res.status(200).send({ message: "New Project added" });
+            }
+          });
+        }
+      );
     }
   });
 };

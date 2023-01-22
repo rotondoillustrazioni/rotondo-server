@@ -21,7 +21,6 @@ const login = async (req, res) => {
       res.status(401).send({ error: "Username or password does not match." });
     }
   } catch (error) {
-    console.log(error);
     res.status(401).send({ error: "Username or password does not match." });
   }
 };
