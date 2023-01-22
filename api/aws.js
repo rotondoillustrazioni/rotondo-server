@@ -1,23 +1,4 @@
-const mongoose = require("mongoose");
-const { ObjectId } = require("bson");
 const AWS = require("aws-sdk");
-
-const Users = mongoose.Schema(
-  {
-    _id: ObjectId,
-    username: String,
-    password: String,
-    email: String,
-  },
-  { collection: "users" }
-);
-const usersSchema = mongoose.model("users", Users);
-
-async function getUser(username) {
-  return usersSchema.findOne({
-    username: username,
-  });
-}
 
 async function uploadProjectOnS3(folderName, images) {
   AWS.config.update({
@@ -51,4 +32,4 @@ async function uploadImageOnS3(s3, folderName, image) {
   return data.Location;
 }
 
-module.exports = { getUser: getUser, uploadProjectOnS3: uploadProjectOnS3 };
+module.exports = { uploadProjectOnS3: uploadProjectOnS3 };

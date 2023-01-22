@@ -1,6 +1,6 @@
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const getUser = require("../api/api").getUser;
+const getUser = require("../api/utility").getUser;
 require("dotenv").config();
 
 const login = async (req, res) => {

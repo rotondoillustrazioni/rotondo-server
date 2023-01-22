@@ -1,5 +1,6 @@
 const multiparty = require("multiparty");
-const uploadProjectOnS3 = require("../api/api").uploadProjectOnS3;
+const uploadProjectOnS3 = require("../api/aws").uploadProjectOnS3;
+const { projectsSchema } = require("../schemas");
 
 const getProject = (req, res) => {
   projectsSchema.findById(req.params.id, (err, doc) => {

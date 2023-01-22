@@ -2,12 +2,12 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 require("dotenv").config();
-const login = require("./routes/login");
 
 const { expressjwt: expressJwt } = require("express-jwt");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
+const { login } = require("./routes/login");
 const { editAboutUs, getAboutUs } = require("./routes/aboutus");
 const { getContacts, editContacts } = require("./routes/contacts");
 const { getProjects } = require("./routes/projects");
@@ -64,7 +64,7 @@ app.post("/aboutus/edit/:lan", editAboutUs);
 app.get("/contacts/", getContacts);
 app.post("/contacts/edit/:contact", editContacts);
 
-app.post("/login", login.login);
+app.post("/login", login);
 
 connectToDB().then(
   () => {
