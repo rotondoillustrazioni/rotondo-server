@@ -11,14 +11,14 @@ async function uploadProjectOnS3(folderName, images) {
   let res = [];
   await Promise.all(
     images.map(async (image) => {
-      let url = await uploadImageOnS3(s3, folderName, image);
+      let url = await uploadImageOnS3(folderName, image);
       res.push(url);
     })
   );
   return res;
 }
 
-async function uploadImageOnS3(s3, folderName, image) {
+async function uploadImageOnS3(folderName, image) {
   const fs = require("fs");
   const key = folderName + "/" + image.originalFilename;
   let params = {
@@ -59,5 +59,6 @@ async function emptyS3Directory(bucket, dir) {
 
 module.exports = {
   uploadProjectOnS3: uploadProjectOnS3,
+  uploadImageOnS3: uploadImageOnS3,
   emptyS3Directory: emptyS3Directory,
 };

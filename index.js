@@ -11,10 +11,16 @@ const { login } = require("./routes/login");
 const { editAboutUs, getAboutUs } = require("./routes/aboutus");
 const { getContacts, editContacts } = require("./routes/contacts");
 const { getProjects } = require("./routes/projects");
-const { getProject, deleteProject, newProject } = require("./routes/project");
+const {
+  getProject,
+  deleteProject,
+  newProject,
+  editProject,
+} = require("./routes/project");
 
 const uri = process.env.MONGODB_URI;
 
+mongoose.set("useFindAndModify", false);
 const connectToDB = async () => {
   await mongoose.connect(uri, {
     useUnifiedTopology: true,
@@ -54,9 +60,11 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.get("/projects", getProjects);
+
 app.get("/project/:id", getProject);
 app.delete("/project/delete/:id", deleteProject);
 app.put("/project/new", newProject);
+app.post("/project/edit/:id", editProject);
 
 app.get("/aboutus/:lan", getAboutUs);
 app.post("/aboutus/edit/:lan", editAboutUs);
