@@ -12,7 +12,7 @@ async function uploadProjectOnS3(folderName, images) {
   await Promise.all(
     images.map(async (image) => {
       let url = await uploadImageOnS3(folderName, image);
-      res.push(url);
+      res.push({ fileName: image.originalFilename, url: url });
     })
   );
   return res;
@@ -33,9 +33,9 @@ async function uploadImageOnS3(folderName, image) {
   return data.Location;
 }
 
-async function emptyS3Directory(bucket, dir) {
+async function emptyS3Directory(dir) {
   const listParams = {
-    Bucket: bucket,
+    Bucket: process.env.BUCKET_NAME,
     Prefix: dir,
   };
 
@@ -44,7 +44,7 @@ async function emptyS3Directory(bucket, dir) {
   if (listedObjects.Contents.length === 0) return;
 
   const deleteParams = {
-    Bucket: bucket,
+    Bucket: process.env.BUCKET_NAME,
     Delete: { Objects: [] },
   };
 
@@ -57,8 +57,17 @@ async function emptyS3Directory(bucket, dir) {
   if (listedObjects.IsTruncated) await emptyS3Directory(bucket, dir);
 }
 
+async function deleteImageOnS3(folderName, imageName) {
+  const deleteParams = {
+    Bucket: process.env.BUCKET_NAME,
+    Key: folderName + "/" + imageName,
+  };
+
+  await s3.deleteObject(deleteParams).promise();
+}
+
 module.exports = {
   uploadProjectOnS3: uploadProjectOnS3,
-  uploadImageOnS3: uploadImageOnS3,
   emptyS3Directory: emptyS3Directory,
+  deleteImageOnS3: deleteImageOnS3,
 };

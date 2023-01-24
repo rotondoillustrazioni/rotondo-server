@@ -19,7 +19,12 @@ const NewProject = mongoose.Schema(
     title: String,
     subtitle: String,
     description: String,
-    images: Array,
+    images: [
+      {
+        fileName: String,
+        url: String,
+      },
+    ],
   },
   { collection: "projects" }
 );

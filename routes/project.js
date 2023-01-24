@@ -1,8 +1,9 @@
 const multiparty = require("multiparty");
 const uploadProjectOnS3 = require("../api/aws").uploadProjectOnS3;
 const emptyS3Directory = require("../api/aws").emptyS3Directory;
-const uploadImageOnS3 = require("../api/aws").uploadImageOnS3;
 const { projectsSchema, newProjectSchema } = require("../schemas");
+const { deleteImageOnS3 } = require("../api/aws");
+const mongoose = require("mongoose");
 
 const getProject = (req, res) => {
   projectsSchema.findById(req.params.id, (err, doc) => {
@@ -19,7 +20,7 @@ const deleteProject = (req, res) => {
       res.send(err);
     }
     // delete the AWS S3 project
-    await emptyS3Directory(process.env.BUCKET_NAME, req.body.projectTitle);
+    await emptyS3Directory(req.body.projectTitle);
     res.json(doc);
   });
 };
@@ -31,14 +32,13 @@ const newProject = async (req, res) => {
       res.send(err);
     } else {
       await uploadProjectOnS3(fields.title[0], files.images).then(
-        async (urls) => {
+        async (imgsObjs) => {
           const newProject = new newProjectSchema({
             title: fields.title[0],
             subtitle: fields.subtitle[0],
             description: fields.description[0],
-            images: urls,
+            images: imgsObjs,
           });
-
           await newProject.save((err) => {
             if (err) {
               console.log(err);
@@ -66,47 +66,59 @@ const editProject = (req, res) => {
     if (err) {
       res.send(err);
     } else {
-      if (
-        files.images !== undefined &&
-        files.images.some((image) => image !== undefined)
-      ) {
-        let newImages = files.images.filter((image) => image !== undefined);
-        let project = await projectsSchema.findById(req.params.id);
-        let urls = await uploadProjectOnS3(project.title, newImages);
-        projectsSchema
+      try {
+        if (
+          files.images !== undefined &&
+          files.images.some((image) => image !== undefined)
+        ) {
+          let newImages = files.images.filter((image) => image !== undefined);
+          let project = await projectsSchema.findById(req.params.id);
+          let imgsObjs = await uploadProjectOnS3(project.title, newImages);
+          imgsObjs.map(async (i) => {
+            let newImgObj = {
+              _id: new mongoose.Types.ObjectId(),
+              fileName: i.fileName,
+              url: i.url,
+            };
+            await projectsSchema.findByIdAndUpdate(
+              req.params.id,
+              {
+                $push: { images: newImgObj },
+                // $set: filteredBody,
+              },
+              { new: true }
+            );
+          });
+        }
+        if (fields.deletedImages !== undefined) {
+          let deletedImages = fields.deletedImages.map((i) => JSON.parse(i));
+          await Promise.all(
+            deletedImages.map(async (di) => {
+              await deleteImageOnS3(di.projectName, di.originalFilename);
+              await projectsSchema.findByIdAndUpdate(
+                req.params.id,
+                {
+                  $pull: { images: { fileName: di.originalFilename } },
+                  // $set: filteredBody,
+                },
+                { new: true }
+              );
+            })
+          );
+        }
+        await projectsSchema
           .findByIdAndUpdate(
             req.params.id,
             {
-              $push: { images: urls },
               $set: filteredBody,
             },
             { new: true }
           )
           .then((doc) => {
             res.status(200).send({ message: "Project updated", doc: doc });
-          })
-          .catch((err) => {
-            res
-              .status(500)
-              .send({ message: "Error updating project", error: err });
           });
-      } else {
-        projectsSchema
-          .findByIdAndUpdate(
-            req.params.id,
-            {
-              $set: filteredBody,
-            },
-            { new: true }
-          )
-          .then((doc) => {
-            res.status(200).send({ message: "Project updated", doc: doc });
-          })
-          .catch((err) => {
-            res
-              .status(500)
-              .send({ message: "Error updating project", error: err });
-          });
+      } catch (err) {
+        res.status(500).send({ message: "Error updating project", error: err });
       }
     }
   });
