@@ -11,6 +11,9 @@ const { login } = require("./routes/login");
 const { editAboutUs, getAboutUs } = require("./routes/aboutus");
 const { getContacts, editContacts } = require("./routes/contacts");
 const { getProjects } = require("./routes/projects");
+const { getNotifications } = require("./routes/notifications");
+const { newNotification } = require("./routes/notifications");
+
 const {
   getProject,
   deleteProject,
@@ -44,7 +47,7 @@ app.use(
     algorithms: ["HS256"],
   }).unless({
     method: ["GET"],
-    path: ["/login"],
+    path: ["/login", "/notification/new"],
   })
 );
 
@@ -71,6 +74,9 @@ app.post("/aboutus/edit/:lan", editAboutUs);
 
 app.get("/contacts/", getContacts);
 app.post("/contacts/edit/:contact", editContacts);
+
+app.put("/notification/new", newNotification);
+app.get("/notifications", getNotifications);
 
 app.post("/login", login);
 

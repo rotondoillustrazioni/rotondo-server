@@ -42,4 +42,40 @@ const Users = mongoose.Schema(
 );
 const usersSchema = mongoose.model("users", Users);
 
-module.exports = { projectsSchema, usersSchema, newProjectSchema };
+const Notifications = mongoose.Schema(
+  {
+    _id: ObjectId,
+    email: String,
+    title: String,
+    description: String,
+    date: Date,
+    read: Boolean,
+  },
+  { collection: "notifications" }
+);
+
+const notificationsSchema = mongoose.model("notifications", Notifications);
+
+const NewNotification = mongoose.Schema(
+  {
+    email: String,
+    title: String,
+    description: String,
+    date: Date,
+    read: Boolean,
+  },
+  { collection: "notifications" }
+);
+
+const newNotificationsSchema = mongoose.model(
+  "newNotifications",
+  NewNotification
+);
+
+module.exports = {
+  projectsSchema,
+  usersSchema,
+  newProjectSchema,
+  notificationsSchema,
+  newNotificationsSchema,
+};
