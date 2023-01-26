@@ -15,6 +15,7 @@ const {
   getNotifications,
   saveNotification,
   lastNotification,
+  deleteNotification,
 } = require("./routes/notifications");
 const server = require("http").createServer(app);
 options = {
@@ -90,6 +91,7 @@ app.get("/contacts/", getContacts);
 app.post("/contacts/edit/:contact", editContacts);
 
 app.get("/notifications", getNotifications);
+app.delete("/notifications/delete/:id", deleteNotification);
 
 app.post("/login", login);
 
@@ -101,7 +103,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("message-values", async (data) => {
-    console.log("data ", data);
     await saveNotification(data);
     await lastNotification().then((result) => {
       io.emit("new_notification", result);

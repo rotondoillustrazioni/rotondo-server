@@ -10,6 +10,15 @@ const getNotifications = (req, res) => {
   });
 };
 
+const deleteNotification = (req, res) => {
+  notificationsSchema.findByIdAndDelete(req.params.id, async (err, doc) => {
+    if (err) {
+      res.send(err);
+    }
+    res.json(doc);
+  });
+};
+
 async function saveNotification(data) {
   const newNotification = new newNotificationSchema({
     name: data.name,
@@ -34,4 +43,5 @@ module.exports = {
   getNotifications: getNotifications,
   saveNotification: saveNotification,
   lastNotification: lastNotification,
+  deleteNotification: deleteNotification,
 };
