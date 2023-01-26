@@ -16,6 +16,7 @@ const {
   saveNotification,
   lastNotification,
   deleteNotification,
+  editNotification,
 } = require("./routes/notifications");
 const server = require("http").createServer(app);
 options = {
@@ -92,6 +93,7 @@ app.post("/contacts/edit/:contact", editContacts);
 
 app.get("/notifications", getNotifications);
 app.delete("/notifications/delete/:id", deleteNotification);
+app.post("/notifications/edit/:id", editNotification);
 
 app.post("/login", login);
 

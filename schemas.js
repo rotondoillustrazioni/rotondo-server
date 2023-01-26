@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const timeZone = require("mongoose-timezone");
 const { ObjectId } = require("bson");
 
 const Projects = mongoose.Schema(
@@ -55,6 +56,7 @@ const Notifications = mongoose.Schema(
   { collection: "notifications" }
 );
 
+Notifications.plugin(timeZone);
 const notificationsSchema = mongoose.model("notifications", Notifications);
 
 const NewNotification = mongoose.Schema(
@@ -69,6 +71,7 @@ const NewNotification = mongoose.Schema(
   { collection: "notifications" }
 );
 
+NewNotification.plugin(timeZone);
 const newNotificationSchema = mongoose.model(
   "newNotification",
   NewNotification

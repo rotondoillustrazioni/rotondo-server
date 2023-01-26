@@ -19,6 +19,22 @@ const deleteNotification = (req, res) => {
   });
 };
 
+const editNotification = (req, res) => {
+  notificationsSchema.findByIdAndUpdate(
+    req.params.id,
+    {
+      $set: req.body,
+    },
+    { new: true },
+    (err, doc) => {
+      if (err) {
+        res.send(err);
+      }
+      res.json(doc);
+    }
+  );
+};
+
 async function saveNotification(data) {
   const newNotification = new newNotificationSchema({
     name: data.name,
@@ -44,4 +60,5 @@ module.exports = {
   saveNotification: saveNotification,
   lastNotification: lastNotification,
   deleteNotification: deleteNotification,
+  editNotification: editNotification,
 };
