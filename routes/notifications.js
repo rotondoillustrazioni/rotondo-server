@@ -19,14 +19,19 @@ async function saveNotification(data) {
     date: new Date(Date.now()),
     read: false,
   });
-  newNotification.save((err) => {
+  await newNotification.save((err) => {
     if (err) {
       console.log(err);
     }
   });
 }
 
+async function lastNotification() {
+  return await notificationsSchema.find().sort({ _id: -1 }).limit(1);
+}
+
 module.exports = {
   getNotifications: getNotifications,
   saveNotification: saveNotification,
+  lastNotification: lastNotification,
 };

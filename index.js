@@ -14,6 +14,7 @@ const { getProjects } = require("./routes/projects");
 const {
   getNotifications,
   saveNotification,
+  lastNotification,
 } = require("./routes/notifications");
 const server = require("http").createServer(app);
 options = {
@@ -102,7 +103,9 @@ io.on("connection", (socket) => {
   socket.on("message-values", async (data) => {
     console.log("data ", data);
     await saveNotification(data);
-    io.emit("new_notification", data);
+    await lastNotification().then((result) => {
+      io.emit("new_notification", result);
+    });
   });
 });
 
