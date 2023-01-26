@@ -11,8 +11,15 @@ const { login } = require("./routes/login");
 const { editAboutUs, getAboutUs } = require("./routes/aboutus");
 const { getContacts, editContacts } = require("./routes/contacts");
 const { getProjects } = require("./routes/projects");
-const { getNotifications } = require("./routes/notifications");
-const { newNotification } = require("./routes/notifications");
+const {
+  getNotifications,
+  saveNotification,
+} = require("./routes/notifications");
+const server = require("http").createServer(app);
+options = {
+  cors: true,
+};
+const io = require("socket.io")(server, options);
 
 const {
   getProject,
@@ -46,8 +53,11 @@ app.use(
     secret: process.env.TOKEN_SECRET,
     algorithms: ["HS256"],
   }).unless({
-    method: ["GET"],
-    path: ["/login", "/notification/new"],
+    method: ["GET"], // TODO: delete
+    path: [
+      "/login",
+      "/notification/new" /* "/aboutus", "/contacts", "/projects"*/,
+    ],
   })
 );
 
@@ -63,6 +73,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.get("/projects", getProjects);
+// app.get("/projects/admin", getProjects);
 
 app.get("/project/:id", getProject);
 app.delete("/project/delete/:id", deleteProject);
@@ -70,20 +81,35 @@ app.put("/project/new", newProject);
 app.post("/project/edit/:id", editProject);
 
 app.get("/aboutus/:lan", getAboutUs);
+// app.get("/aboutus/admin/:lan", getAboutUs);
 app.post("/aboutus/edit/:lan", editAboutUs);
 
 app.get("/contacts/", getContacts);
+// app.get("/contacts/admin", getContacts);
 app.post("/contacts/edit/:contact", editContacts);
 
-app.put("/notification/new", newNotification);
 app.get("/notifications", getNotifications);
 
 app.post("/login", login);
 
+io.on("connection", (socket) => {
+  console.log("New client connected ", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
+
+  socket.on("message-values", async (data) => {
+    console.log("data ", data);
+    await saveNotification(data);
+    io.emit("new_notification", data);
+  });
+});
+
 connectToDB().then(
   () => {
     console.log("DB connected");
-    app.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, () => {
       console.log("Server is listening on port " + process.env.PORT + "...");
     });
   },

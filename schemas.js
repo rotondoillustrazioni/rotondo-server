@@ -45,6 +45,7 @@ const usersSchema = mongoose.model("users", Users);
 const Notifications = mongoose.Schema(
   {
     _id: ObjectId,
+    name: String,
     email: String,
     title: String,
     description: String,
@@ -58,6 +59,7 @@ const notificationsSchema = mongoose.model("notifications", Notifications);
 
 const NewNotification = mongoose.Schema(
   {
+    name: String,
     email: String,
     title: String,
     description: String,
@@ -67,8 +69,8 @@ const NewNotification = mongoose.Schema(
   { collection: "notifications" }
 );
 
-const newNotificationsSchema = mongoose.model(
-  "newNotifications",
+const newNotificationSchema = mongoose.model(
+  "newNotification",
   NewNotification
 );
 
@@ -77,5 +79,5 @@ module.exports = {
   usersSchema,
   newProjectSchema,
   notificationsSchema,
-  newNotificationsSchema,
+  newNotificationSchema,
 };

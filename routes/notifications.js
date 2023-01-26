@@ -1,4 +1,4 @@
-const { notificationsSchema, newNotificationsSchema } = require("../schemas");
+const { notificationsSchema, newNotificationSchema } = require("../schemas");
 
 const getNotifications = (req, res) => {
   notificationsSchema.find((err, doc) => {
@@ -10,26 +10,23 @@ const getNotifications = (req, res) => {
   });
 };
 
-const newNotification = (req, res) => {
-  const { email, title, description, date, read } = req.body;
-  const newNotification = new newNotificationsSchema({
-    email,
-    title,
-    description,
-    date,
-    read,
+async function saveNotification(data) {
+  const newNotification = new newNotificationSchema({
+    name: data.name,
+    title: data.title,
+    email: data.email,
+    description: data.description,
+    date: new Date(Date.now()),
+    read: false,
   });
   newNotification.save((err) => {
     if (err) {
       console.log(err);
-      res.status(500).send({ message: "Error", error: err });
-    } else {
-      res.status(200).send({ message: "New notification added" });
     }
   });
-};
+}
 
 module.exports = {
   getNotifications: getNotifications,
-  newNotification: newNotification,
+  saveNotification: saveNotification,
 };
