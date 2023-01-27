@@ -8,6 +8,7 @@ const Projects = mongoose.Schema(
     title: String,
     subtitle: String,
     description: String,
+    descriptionIT: String,
     images: Array,
   },
   { collection: "projects" }
@@ -20,6 +21,7 @@ const NewProject = mongoose.Schema(
     title: String,
     subtitle: String,
     description: String,
+    descriptionIT: String,
     images: [
       {
         fileName: String,

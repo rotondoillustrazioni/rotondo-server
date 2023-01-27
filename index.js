@@ -56,7 +56,13 @@ app.use(
     secret: process.env.TOKEN_SECRET,
     algorithms: ["HS256"],
   }).unless({
-    path: ["/login", /^\/aboutus\/([^\/\n]*)$/gm, "/contacts", "/projects", /^\/project\/([^\/\n]*)$/gm],
+    path: [
+      "/login",
+      /^\/aboutus\/([^\/\n]*)$/gm,
+      "/contacts",
+      "/projects",
+      /^\/project\/([^\/\n]*)$/gm,
+    ],
   })
 );
 

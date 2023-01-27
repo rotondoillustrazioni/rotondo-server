@@ -37,6 +37,7 @@ const newProject = async (req, res) => {
             title: fields.title[0],
             subtitle: fields.subtitle[0],
             description: fields.description[0],
+            descriptionIT: fields.descriptionIT[0],
             images: imgsObjs,
           });
           await newProject.save((err) => {
@@ -62,6 +63,10 @@ const editProject = (req, res) => {
     }
     if (fields.description[0] !== "undefined") {
       filteredBody["description"] = fields.description[0];
+    }
+
+    if (fields.descriptionIT[0] !== "undefined") {
+      filteredBody["descriptionIT"] = fields.descriptionIT[0];
     }
     if (err) {
       res.send(err);
