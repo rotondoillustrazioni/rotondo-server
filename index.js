@@ -56,11 +56,7 @@ app.use(
     secret: process.env.TOKEN_SECRET,
     algorithms: ["HS256"],
   }).unless({
-    method: ["GET"], // TODO: delete
-    path: [
-      "/login",
-      "/notification/new" /* "/aboutus", "/contacts", "/projects"*/,
-    ],
+    path: ["/login", /^\/aboutus\/([^\/\n]*)$/gm, "/contacts", "/projects", /^\/project\/([^\/\n]*)$/gm],
   })
 );
 
@@ -79,16 +75,20 @@ app.get("/projects", getProjects);
 // app.get("/projects/admin", getProjects);
 
 app.get("/project/:id", getProject);
+// app.get("/project/admin/:id", getProject);
+
 app.delete("/project/delete/:id", deleteProject);
 app.put("/project/new", newProject);
 app.post("/project/edit/:id", editProject);
 
 app.get("/aboutus/:lan", getAboutUs);
 // app.get("/aboutus/admin/:lan", getAboutUs);
+
 app.post("/aboutus/edit/:lan", editAboutUs);
 
 app.get("/contacts/", getContacts);
 // app.get("/contacts/admin", getContacts);
+
 app.post("/contacts/edit/:contact", editContacts);
 
 app.get("/notifications", getNotifications);
