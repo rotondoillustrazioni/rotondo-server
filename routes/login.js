@@ -1,6 +1,7 @@
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const getUser = require("../api/utility").getUser;
+const { usersSchema } = require("../schemas");
 require("dotenv").config();
 
 const login = async (req, res) => {
@@ -25,4 +26,27 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { login: login };
+const changePassword = async (req, res) => {
+  const newPassword = req.body.newPassword;
+  const user = await getUser("admin");
+  if (user) {
+    const salt = bcryptjs.genSaltSync();
+    const hash = bcryptjs.hashSync(newPassword, salt);
+
+    await usersSchema.findByIdAndUpdate(
+      user._id,
+      { password: hash },
+      { new: true },
+      (err, doc) => {
+        if (err) {
+          res.status(401).send({ error: "Error in changing password" });
+        }
+        res.status(200).send({ message: "Password changed" });
+      }
+    );
+  } else {
+    res.status(401).send({ error: "Error in changing password" });
+  }
+};
+
+module.exports = { login: login, changePassword: changePassword };

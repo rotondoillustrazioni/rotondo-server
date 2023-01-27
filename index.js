@@ -7,7 +7,7 @@ const { expressjwt: expressJwt } = require("express-jwt");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-const { login } = require("./routes/login");
+const { login, changePassword } = require("./routes/login");
 const { editAboutUs, getAboutUs } = require("./routes/aboutus");
 const { getContacts, editContacts } = require("./routes/contacts");
 const { getProjects } = require("./routes/projects");
@@ -102,6 +102,7 @@ app.delete("/notifications/delete/:id", deleteNotification);
 app.post("/notifications/edit/:id", editNotification);
 
 app.post("/login", login);
+app.post("/password/change", changePassword);
 
 io.on("connection", (socket) => {
   console.log("New client connected ", socket.id);
