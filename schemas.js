@@ -10,6 +10,7 @@ const Projects = mongoose.Schema(
     description: String,
     descriptionIT: String,
     images: Array,
+    date: Date,
   },
   { collection: "projects" }
 );
@@ -28,6 +29,10 @@ const NewProject = mongoose.Schema(
         url: String,
       },
     ],
+    date: {
+      type: Date,
+      default: Date.now,
+    },
   },
   { collection: "projects" }
 );
