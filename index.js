@@ -122,8 +122,9 @@ io.on("connection", (socket) => {
 connectToDB().then(
   () => {
     console.log("DB connected");
-    server.listen(process.env.PORT, () => {
-      console.log("Server is listening on port " + process.env.PORT + "...");
+    const port = process.env.PORT || 3000;
+    server.listen(port, () => {
+      console.log("Server is listening on port " + port + "...");
     });
   },
   (err) => {
